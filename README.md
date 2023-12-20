@@ -1,4 +1,4 @@
-# ltermio - Lightweight POSIX terminal I/O library
+# ltermio - A Lightweight POSIX terminal I/O library
 
 The package contains four modules: **cursor**, **termkey**, **color256** and **unicon**. Tested only on **MacOS terminal** and **iTerm2**, so the platform compatibility has not been well verfied yet.
 All functions are based on **CSI** sequences and **termios**, no additional requirements other than the standard library.
