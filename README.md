@@ -6,7 +6,7 @@ All functions are based on **CSI** sequences and **termios**, no additional requ
 ## Installation
 Uses pip to install the package:
 
-`    pip3 install ltermio`
+`pip3 install ltermio`
 
 ## cursor
 Wrapper functions of **CSI(Control Sequence Introducer)** sequences about cursor and screen. And additionally provides a several of functions for text composing.
@@ -21,5 +21,5 @@ Sets 256-color display attributes of the character terminal.
 Collection of some common icons in unicode character set.
 
 ## History & Why
-When I was learning Python a few months ago, I decided to write a terminal Tetris game as a practice of the language learning. Also, due to learning reason, I did not want to use any third-party packages. So when I finally finished the game, there naturally formed a by-product - terminal I/O library, I named it ltermio.
+When I was learning Python a few months ago, I decided to write a terminal Tetris game as a practice of the language learning. Due to the learning reason, I did not want to use any third-party packages. So when I finally finished the game, there naturally formed a by-product, I named it ltermio.
 
