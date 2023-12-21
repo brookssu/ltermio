@@ -140,7 +140,7 @@ def show_cursor():
 def hide_cursor():
     """Hides the cursor from screen.
     """
-    print(f'{_CSI_LEAD}?25l', end='', flush = True)
+    print(f'{_CSI_LEAD}?25l', end='', flush=True)
 
 
 def switch_screen():
