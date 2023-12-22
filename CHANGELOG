@@ -1,4 +1,8 @@
-0.1.6 Current release
+0.2.6 Current release
+  * Remove the features of disable echo and disable intr from getch().
+  * Add a new function keyparam() to set echo and intr attribute.
+  * Modify relative comments.
+0.1.6
   * Change the building script from setup.py to pyproject.toml.
 0.1.5
   * Update some metadata in setup.py.

@@ -47,13 +47,12 @@ def getch(timeout: int = BLOCKING_) -> str:
     """Gets a character from stdin with non-canonical mode.
 
     Instead of waiting for a CR in canonical mode, function returns
-    immediately once read a key. It also diabled echo and INTR signal
-    when reading.
+    immediately once read a key.
 
     Args:
         timeout: An integer to specify a waiting time in units of 1/10
             second. If timeout = BLOCKING_, function will block until
-            read a charactor, otherwise return immediately if timeout
+            read a charactor, otherwise returns immediately if timeout
             occurs, regardless of whether a charactor is read or not.
 
     Returns:
@@ -65,12 +64,11 @@ def getch(timeout: int = BLOCKING_) -> str:
     # The Python termios flags is a list, as following:
     #   [iflag, oflag, cflag, lflag, ispeed, ospeed, cc]
     old_flags = termios.tcgetattr(in_fd)
-    new_flags = old_flags[:]  # Makes a copy of flags
+    new_flags = old_flags[:]
     new_flags[6] = old_flags[6][:]
 
-    # Sets lflag(local flag): non-canonical mode, disable echo, and does
-    # not generate INTR signal when Ctrl+C pressed.
-    new_flags[3] &= ~(termios.ICANON | termios.ECHO | termios.ISIG)
+    # Sets lflag(local flag) to non-canonical mode
+    new_flags[3] &= ~termios.ICANON
 
     # Sets cc(control characters): At least reads 1 character in blocking
     # mode, otherwise 0 with a specific timeout.
@@ -82,10 +80,31 @@ def getch(timeout: int = BLOCKING_) -> str:
         new_flags[6][termios.VTIME] = timeout
 
     try:
-        termios.tcsetattr(in_fd, termios.TCSADRAIN, new_flags)
+        termios.tcsetattr(in_fd, termios.TCSANOW, new_flags)
         return sys.stdin.read(1)
     finally:
-        termios.tcsetattr(in_fd, termios.TCSADRAIN, old_flags)
+        termios.tcsetattr(in_fd, termios.TCSANOW, old_flags)
+
+
+def keyparam(*, echo: bool = True, intr: bool = True):
+    """Sets frequently-used attributes of the input(stdin).
+
+    Args:
+        echo: Echoes input characters if True, otherwise does not echo
+            (also known as password mode).
+        intr: If True, system generates keyboard interrupt signals when
+            read special keys(e.g. Control-C). Sets it to False to treat
+            them as normal keys.
+    """
+    in_fd = sys.stdin.fileno()
+    flags = termios.tcgetattr(in_fd)
+    flags[3] = ((flags[3] | termios.ECHO | termios.ECHONL)
+                if echo else
+                (flags[3] & ~(termios.ECHO | termios.ECHONL)))
+    flags[3] = ((flags[3] | termios.ISIG)
+                if intr else
+                (flags[3] & ~termios.ISIG))
+    termios.tcsetattr(in_fd, termios.TCSANOW, flags)
 
 
 class Key(IntEnum):
@@ -322,11 +341,12 @@ def _test_termkey():
     """
     raw = (len(sys.argv) > 1 and sys.argv[1] == '-r')
     print('Press any key to get code, CONTROL-X to exit.')
+    keyparam(echo=False, intr=False)
     key = getkey()
     while key != Key.CONTROL_X:
         print(f'code: {key:04x}, char: {chr(key)!r}')
         key = getkey(BLOCKING_, raw)
-    input('Press enter to exit.')  # verifys the setting recovery.
+    keyparam()
 
 
 if __name__ == '__main__':

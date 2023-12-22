@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = 'ltermio'
-version = '0.1.6'
+version = '0.2.6'
 description = 'A lightweight POSIX terminal I/O library'
 readme = 'README.md'
 requires-python = '>= 3.6'
@@ -34,7 +34,6 @@ classifiers = [
 
 [project.urls]
 Homepage = 'https://github.com/brookssu/ltermio'
-Repository = 'https://github.com/brookssu/ltermio.git'
 
 [project.scripts]
 cursor-demo = 'cursor:_test_cursor'
