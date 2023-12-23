@@ -12,7 +12,7 @@ Uses pip to install the package:
 Wrapper functions of **CSI(Control Sequence Introducer)** sequences about cursor and screen. And additionally provides a several of functions for text composing.
 
 ## termkey
-There are two functions **getch()** and **getkey()** for reading keyboard in non-canonical mode.  **getch()** reads raw key characters byte by byte, **getkey()** calls getch() and transforms the CSI sequences of function keys into key codes that defined in an enumerate class Key.
+There are only three functions: **getch()** and **getkey()** reads keyboard in non-canonical mode, **setparams()** sets frequently-used input attributes.  **getch()** reads raw key characters byte by byte, **getkey()** calls getch() and transforms the CSI sequences of function keys into key codes that defined in an enumerate class Key.
 
 ## color256
 Sets 256-color display attributes of the character terminal.

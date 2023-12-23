@@ -17,22 +17,27 @@
 
 """To provide functions for reading keyboard in non-canonical mode.
 
-There are 2 functions:
+There are 3 functions:
     getch(): Gets a character from stdin.
     getkey(): Calls getch() and transforms character to keycode.
-Function keycodes in common using are defined in class Key.
+    setparams(): Sets frenquently-used attributes of the input.
+Function keycodes in common using are defined in enum class Key.
 
 A typical usage example for getkey():
 
     import termkey
     from termkey import Key
 
+    termkey.setparams(echo=False, intr=False)
+
     key = termkey.getkey()
-    if key == Key.SHIFT + Key.RIGHT:
+    while key != Key.ESC:
         ...
+        key = termkey.getkey()
+    termkey.setparams()
 
 Applicability: Implementations are base on XTerm specification and
-termios, so they are just for POSIX terminal applications.
+termios, so they are only for POSIX terminal applications.
 """
 
 import re
@@ -86,7 +91,7 @@ def getch(timeout: int = BLOCKING_) -> str:
         termios.tcsetattr(in_fd, termios.TCSANOW, old_flags)
 
 
-def keyparam(*, echo: bool = True, intr: bool = True):
+def setparams(*, echo: bool = True, intr: bool = True):
     """Sets frequently-used attributes of the input(stdin).
 
     Args:
@@ -341,12 +346,12 @@ def _test_termkey():
     """
     raw = (len(sys.argv) > 1 and sys.argv[1] == '-r')
     print('Press any key to get code, CONTROL-X to exit.')
-    keyparam(echo=False, intr=False)
+    setparams(echo=False, intr=False)
     key = getkey()
     while key != Key.CONTROL_X:
         print(f'code: {key:04x}, char: {chr(key)!r}')
         key = getkey(BLOCKING_, raw)
-    keyparam()
+    setparams()
 
 
 if __name__ == '__main__':

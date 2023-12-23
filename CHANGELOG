@@ -1,4 +1,7 @@
-0.2.6 Current release
+0.2.7 Current release
+  * Rename keyparam() to setparams().
+  * Modify relative comments and README.md.
+0.2.6
   * Remove the features of disable echo and disable intr from getch().
   * Add a new function keyparam() to set echo and intr attribute.
   * Modify relative comments.
