@@ -173,7 +173,7 @@ def v_composing(comp_seq: str) -> str:
 
     Following sample code displays three big colorful greetings:
 
-        from cursor import putmsg, v_composing
+        from ltermio import putmsg, v_composing
 
         _P1 = ':{0}\x1b3hj'
         _P15 = ':{0}\x1b6l:{0}\x1b11hj'

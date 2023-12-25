@@ -1,13 +1,12 @@
 [build-system]
-requires = ['setuptools >= 61.0']
-build-backend = "setuptools.build_meta"
+requires = ['hatchling >= 1.0.1']
+build-backend = "hatchling.build"
 
 [project]
 name = 'ltermio'
-version = '0.2.7'
 description = 'A lightweight POSIX terminal I/O library'
 readme = 'README.md'
-requires-python = '>= 3.6'
+requires-python = '>=3.7'
 license = {file = 'LICENSE'}
 authors = [
     {name = 'Brooks Su', email = 'yipeng00@gmail.com'},
@@ -25,22 +24,25 @@ classifiers = [
     'Operating System :: Unix',
     'Operating System :: POSIX',
     'Operating System :: MacOS :: MacOS X',
-    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
     'Environment :: Console',
     'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
     'Topic :: Software Development :: Libraries :: Python Modules',
 ]
+dynamic = ['version',]
 
 [project.urls]
 Homepage = 'https://github.com/brookssu/ltermio'
 
 [project.scripts]
-cursor-demo = 'cursor:_test_cursor'
+cursor-demo = 'ltermio.cursor:_test_cursor'
 
-[tool.setuptools]
-package-dir = {'' = 'src'}
-py-modules = ['cursor', 'termkey', 'color256', 'unicon']
+[tool.hatch.version]
+path = 'ltermio/__init__.py'
 
-[tool.setuptools.packages.find]
-where = ['src']
+[tool.hatch.build.targets.sdist]
+include = ['/ltermio', 'CHANGELOG']
+
+[tool.hatch.build.targets.wheel]
+include = ['/ltermio/*',]

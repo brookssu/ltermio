@@ -25,16 +25,16 @@ Function keycodes in common using are defined in enum class Key.
 
 A typical usage example for getkey():
 
-    import termkey
-    from termkey import Key
+    import ltermio
+    from ltermio import Key
 
-    termkey.setparams(echo=False, intr=False)
+    ltermio.setparams(echo=False, intr=False)
 
-    key = termkey.getkey()
+    key = ltermio.getkey()
     while key != Key.ESC:
         ...
-        key = termkey.getkey()
-    termkey.setparams()
+        key = ltermio.getkey()
+    ltermio.setparams()
 
 Applicability: Implementations are base on XTerm specification and
 termios, so they are only for POSIX terminal applications.
