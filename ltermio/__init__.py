@@ -16,7 +16,7 @@
 
 """A lightweight POSIX character terminal I/O library.
 
-Repo: https://github.com/brookssu/ltermio
+Repo - https://github.com/brookssu/ltermio.git
 """
 
 import functools
@@ -27,14 +27,24 @@ from .termkey import *
 from .unicon import UnicodeIcon as UIcon
 
 
-__version__ = '0.3.0'
+__version__ = '0.3.2'
 __all__ = ['cursor', 'termkey', 'color256', 'unicon']
 
 
-def appentry(func, *, echo=False, intr=False, cursor=False):
-    """A decorator of application entry.
+def appentry(func, echo=False, intr=False, cursor=False):
+    """A decorator of ltermio application entry.
+
+    Before enter entry function, the decorator switchs and clears screen,
+    sets cursor and other input attributes according to parameters.
+    And while the entry function returns, the decorator restores screen,
+    cursor, color and other set attributes.
+
+    Args:
+        echo: Echoes input characters if True, False to disable.
+        intr: False to disable keyboard interrupt signals.
+        cursor: False to hide cursor while True to show.
     """
-    @functools.wraps
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         switch_screen()
         clear_screen()
@@ -45,7 +55,7 @@ def appentry(func, *, echo=False, intr=False, cursor=False):
             return func(*args, **kwargs)
         finally:
             setparams()
-            if not cursor:
-                show_cursor()
+            reset_color()
+            show_cursor()
             restore_screen()
     return wrapper

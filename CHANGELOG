@@ -1,9 +1,14 @@
-0.3.0 Current release
+0.3.2 Current release
+  + Add comment for decorator appentry().
+  + Add reset_color() after return from entry function in appentry().
+0.3.1
+  * fix bug about appentry in __init__.py.
+0.3.0
   * Change build backend from 'setuptools' to 'hatchling'.
   * Rename (re)set_foreground_color to shorter name (re)set_fcolor.
   * Rename (re)set_background_color to shorter name (re)set_bcolor.
-  + Add a decorator appentry() in __init__.py().
-  + Import all modules' public functions and classes in __init__.py().
+  + Add a decorator appentry() in __init__.py.
+  + Import all modules' public functions and classes in __init__.py.
 0.2.7
   * Rename keyparam() to setparams().
   * Modify relative comments and README.md.
