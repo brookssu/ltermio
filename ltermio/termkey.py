@@ -18,11 +18,17 @@
 """To provide functions for reading keyboard in non-canonical mode.
 
 There are 5 curses like functions:
+
     getch(): Gets a character from stdin.
     ungetch(): Puts one or more characters into the key buffer.
     getkey(): Calls getch() and transforms character to keycode.
     ungetkey(): Puts a keycode into the key buffer.
     setparams(): Sets frenquently-used attributes of the input.
+
+And a function to support mouse tracking.
+
+    mouse_handler(): Sets a function to handle mouse report.
+
 Function keycodes in common using are defined in enum class Key.
 
 A typical usage example as following:
@@ -311,6 +317,27 @@ def _match_csi_sequence(seq):
     return Key.NONE
 
 
+# pylint: disable=invalid-name
+_mouse_handler = None
+
+def mouse_handler(func):
+    """Sets a function to handle mouse report.
+    """
+    # pylint: disable=global-statement
+    global _mouse_handler
+    _mouse_handler = func
+
+
+def _get_mouse_report():
+    seq = key_ch = getch(0)
+    while key_ch:
+        key_ch = getch(0)
+        seq += key_ch
+    if _mouse_handler is not None:
+        _mouse_handler(seq)
+    #else If there isn't a mouse handler, just discards the sequence.
+
+
 def getkey(timeout: int = BLOCKING_, raw: bool = False) -> Key | int:
     """Gets key(s) from getch() and tranforms it(them) from string to code.
 
@@ -338,6 +365,9 @@ def getkey(timeout: int = BLOCKING_, raw: bool = False) -> Key | int:
         if seq in '[O':
             # In CSI sequence for leading by '\033[' or '\033O'.
             key_ch = getch(0)
+            if key_ch == 'M':  # it's a mouse event report
+                _get_mouse_report()
+                return Key.NONE
             while key_ch:
                 seq += key_ch
                 if 0x40 <= ord(key_ch) <= 0x7E:

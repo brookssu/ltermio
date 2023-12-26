@@ -27,8 +27,8 @@ from .termkey import *
 from .unicon import UnicodeIcon as UIcon
 
 
-__version__ = '0.3.5'
-__all__ = ['cursor', 'termkey', 'color256', 'unicon']
+__version__ = '0.4.0'
+__all__ = ['cursor', 'termkey', 'color256', 'unicon', 'termouse']
 
 
 def appentry(func, echo=False, intr=False, cursor=False):

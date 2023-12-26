@@ -1,4 +1,8 @@
-0.3.5 Current release
+0.4.0 Current release
+  + Add supporting for mouse event report in getkey().
+  + Add a function mouse_handler() to set mouse report handler.
+  + Add a file termouse.py, get ready to add mouse supporting.
+0.3.5
   + Add ungetch() in termkey module.
   + Add ungetkey() in termkey module.
   * Lightly modify the implementation of the getkey().
