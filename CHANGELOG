@@ -1,4 +1,8 @@
-0.3.2 Current release
+0.3.5 Current release
+  + Add ungetch() in termkey module.
+  + Add ungetkey() in termkey module.
+  * Lightly modify the implementation of the getkey().
+0.3.2
   + Add comment for decorator appentry().
   + Add reset_color() after return from entry function in appentry().
 0.3.1

@@ -9,10 +9,12 @@ Uses pip to install the package:
 `pip3 install ltermio`
 
 ## cursor
-Wrapper functions of **CSI(Control Sequence Introducer)** sequences about cursor and screen. And additionally provides a several of functions for text composing.
+A series of functions about screen and cursor operations. And additionally provides 4 interesting functions for text composing, where **v_composing()** supports using VI like cursor commands to layout text display.
 
 ## termkey
-There are only three functions: **getch()** and **getkey()** reads keyboard in non-canonical mode, **setparams()** sets frequently-used input attributes.  **getch()** reads raw key characters byte by byte, **getkey()** calls getch() and transforms the CSI sequences of function keys into key codes that defined in an enumerate class Key.
+There are 5 curses like functions: **getch()**, **getkey()**, **ungetch()**, **ungetkey()**, **setparams()**.
+
+getch() and getkey() read keyboard in non-canonical mode, ungetch() and ungetkey() put keys back to the key buffer for next reading, setparams() sets frequently-used input attributes.
 
 ## color256
 Sets 256-color display attributes of the character terminal.

@@ -17,19 +17,20 @@
 
 """To provide functions for reading keyboard in non-canonical mode.
 
-There are 3 functions:
+There are 5 curses like functions:
     getch(): Gets a character from stdin.
+    ungetch(): Puts one or more characters into the key buffer.
     getkey(): Calls getch() and transforms character to keycode.
+    ungetkey(): Puts a keycode into the key buffer.
     setparams(): Sets frenquently-used attributes of the input.
 Function keycodes in common using are defined in enum class Key.
 
-A typical usage example for getkey():
+A typical usage example as following:
 
     import ltermio
     from ltermio import Key
 
-    ltermio.setparams(echo=False, intr=False)
-
+    ltermio.setparams(echo=False)
     key = ltermio.getkey()
     while key != Key.ESC:
         ...
@@ -45,6 +46,8 @@ import sys
 import termios
 from enum import IntEnum
 
+
+_ch_buffer = []
 
 BLOCKING_ = -1
 
@@ -64,6 +67,8 @@ def getch(timeout: int = BLOCKING_) -> str:
         A character in string if successful reading. Otherwise returns
         an empty string '' when timeout.
     """
+    if _ch_buffer:
+        return _ch_buffer.pop(0)
 
     in_fd = sys.stdin.fileno()
     # The Python termios flags is a list, as following:
@@ -89,6 +94,20 @@ def getch(timeout: int = BLOCKING_) -> str:
         return sys.stdin.read(1)
     finally:
         termios.tcsetattr(in_fd, termios.TCSANOW, old_flags)
+
+
+def ungetch(key_chs: str):
+    """Puts one or more key characters into the key buffer in order that
+    following getch() or getkey() can read it(them).
+    """
+    _ch_buffer.extend(key_chs)
+
+
+def ungetkey(key_code: int):
+    """Puts a key code into the key buffer in order that following getch()
+    or getkey() can read it.
+    """
+    _ch_buffer.append(chr(key_code))
 
 
 def setparams(*, echo: bool = True, intr: bool = True):
@@ -292,8 +311,6 @@ def _match_csi_sequence(seq):
     return Key.NONE
 
 
-_key_buffer = []
-
 def getkey(timeout: int = BLOCKING_, raw: bool = False) -> Key | int:
     """Gets key(s) from getch() and tranforms it(them) from string to code.
 
@@ -312,9 +329,7 @@ def getkey(timeout: int = BLOCKING_, raw: bool = False) -> Key | int:
         Character's keycode from ord(), or function keycode that defined
         in class Key, or Key.NONE if timeout.
     """
-    global _key_buffer
-
-    key_ch = _key_buffer.pop(0) if _key_buffer else getch(timeout)
+    key_ch = getch(timeout)
     if not key_ch:
         return Key.NONE
     key_code = ord(key_ch)
@@ -327,13 +342,13 @@ def getkey(timeout: int = BLOCKING_, raw: bool = False) -> Key | int:
                 seq += key_ch
                 if 0x40 <= ord(key_ch) <= 0x7E:
                     # CSI terminal character are in range of 0x40-0x7E.
-                    fcode = _match_csi_sequence(seq)
-                    if fcode != Key.NONE:
-                        return fcode
+                    fkey_code = _match_csi_sequence(seq)
+                    if fkey_code:
+                        return fkey_code
                     break
                 key_ch = getch(0)
-        # Puts the left keys to the buffer for unknown sequence.
-        _key_buffer += list(seq)
+        # Due to unknown sequence, puts left characters back to buffer.
+        _ch_buffer.extend(seq)
     return key_code
 
 

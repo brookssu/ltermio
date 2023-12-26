@@ -27,15 +27,15 @@ from .termkey import *
 from .unicon import UnicodeIcon as UIcon
 
 
-__version__ = '0.3.2'
+__version__ = '0.3.5'
 __all__ = ['cursor', 'termkey', 'color256', 'unicon']
 
 
 def appentry(func, echo=False, intr=False, cursor=False):
-    """A decorator of ltermio application entry.
+    """A decorator of the ltermio application entry.
 
-    Before enter entry function, the decorator switchs and clears screen,
-    sets cursor and other input attributes according to parameters.
+    Before enters entry function, the decorator switchs and clears screen,
+    sets cursor and other input attributes according to the parameters.
     And while the entry function returns, the decorator restores screen,
     cursor, color and other set attributes.
 
