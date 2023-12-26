@@ -226,6 +226,9 @@ class Key(IntEnum):
     META        = 0x0800
     OPTION      = 0x0800
 
+    # indicator bit of mouse events.
+    MOUSE_EVENT = 0x0002_0000
+
 
 _csi_sequences = {
     # XTerm sequences
@@ -322,20 +325,22 @@ _mouse_handler = None
 
 def mouse_handler(func):
     """Sets a function to handle mouse report.
+
+    The handle function prototype:
+        func(event: int, col: int, row: int) -> int
     """
     # pylint: disable=global-statement
     global _mouse_handler
     _mouse_handler = func
 
 
-def _get_mouse_report():
-    seq = key_ch = getch(0)
-    while key_ch:
-        key_ch = getch(0)
-        seq += key_ch
-    if _mouse_handler is not None:
-        _mouse_handler(seq)
-    #else If there isn't a mouse handler, just discards the sequence.
+def _get_mouse_event():
+    seq = ''
+    for _ in range(3):
+        seq += getch(0)
+    if not _mouse_handler or len(seq) < 3:
+        return Key.NONE
+    return _mouse_handler(*map(lambda ch: (ord(ch) - 32), seq))
 
 
 def getkey(timeout: int = BLOCKING_, raw: bool = False) -> Key | int:
@@ -366,8 +371,7 @@ def getkey(timeout: int = BLOCKING_, raw: bool = False) -> Key | int:
             # In CSI sequence for leading by '\033[' or '\033O'.
             key_ch = getch(0)
             if key_ch == 'M':  # it's a mouse event report
-                _get_mouse_report()
-                return Key.NONE
+                return _get_mouse_event()
             while key_ch:
                 seq += key_ch
                 if 0x40 <= ord(key_ch) <= 0x7E:

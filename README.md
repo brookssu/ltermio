@@ -3,7 +3,7 @@
 The package contains four modules: **cursor**, **termkey**, **color256** and **unicon**. Tested only on **MacOS terminal** and **iTerm2**, so the platform compatibility has not been well verfied yet.
 All functions are based on **CSI** sequences or **termios**, no additional requirements other than the standard library.
 
-Added a new module **termouse**, ready to support mouse base on XTerm extension.
+New: Added a new module **termouse**, ready to support mouse base on XTerm extension...Roughly implemnted.
 
 ## Installation
 Uses pip to install the package:
@@ -19,7 +19,7 @@ There are 5 curses like functions: **getch()**, **getkey()**, **ungetch()**, **u
 getch() and getkey() read keyboard in non-canonical mode, ungetch() and ungetkey() put keys back to the key buffer for next reading, setparams() sets frequently-used input attributes.
 
 ## termouse
-Ongoing...
+Roughly implemented mouse supporting.
 
 ## color256
 Sets 256-color display attributes of the character terminal.

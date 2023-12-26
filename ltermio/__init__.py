@@ -24,14 +24,15 @@ import functools
 from .color256 import *
 from .cursor import *
 from .termkey import *
+from .termouse import *
 from .unicon import UnicodeIcon as UIcon
 
 
-__version__ = '0.4.0'
+__version__ = '0.4.5'
 __all__ = ['cursor', 'termkey', 'color256', 'unicon', 'termouse']
 
 
-def appentry(func, echo=False, intr=False, cursor=False):
+def appentry(func, echo=False, intr=False, cursor=False, mouse=False):
     """A decorator of the ltermio application entry.
 
     Before enters entry function, the decorator switchs and clears screen,
@@ -43,19 +44,23 @@ def appentry(func, echo=False, intr=False, cursor=False):
         echo: Echoes input characters if True, False to disable.
         intr: False to disable keyboard interrupt signals.
         cursor: False to hide cursor while True to show.
+        mouse: True to enable mouse tracking.
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         switch_screen()
         clear_screen()
+        setparams(echo=echo, intr=intr)
         if not cursor:
             hide_cursor()
-        setparams(echo=echo, intr=intr)
+        if mouse:
+            mouse_tracking_on()
         try:
             return func(*args, **kwargs)
         finally:
-            setparams()
-            reset_color()
+            mouse_tracking_off()
             show_cursor()
+            reset_color()
+            setparams()
             restore_screen()
     return wrapper

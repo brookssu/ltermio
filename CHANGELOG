@@ -1,4 +1,6 @@
-0.4.0 Current release
+0.4.5 Current release
+  + Roughly implemented mouse supporting.
+0.4.0
   + Add supporting for mouse event report in getkey().
   + Add a function mouse_handler() to set mouse report handler.
   + Add a file termouse.py, get ready to add mouse supporting.

@@ -156,7 +156,7 @@ def restore_screen():
     print(f'{_CSI_LEAD}?47l', end='', flush=True)
 
 
-_comp_funcs = {
+_COMP_FUNCS = {
     'h': cursor_left_seq,
     'l': cursor_right_seq,
     'k': cursor_up_seq,
@@ -199,7 +199,6 @@ def v_composing(comp_seq: str) -> str:
     Raises:
         ValueError: Invalid composing sequence.
     """
-    global _comp_funcs
     result = []
     index = repeat = 0
 
@@ -208,8 +207,8 @@ def v_composing(comp_seq: str) -> str:
         index += 1
         if cmd.isdigit():
             repeat = repeat * 10 + int(cmd)
-        elif cmd in _comp_funcs:
-            result.append(_comp_funcs[cmd](repeat if repeat else 1))
+        elif cmd in _COMP_FUNCS:
+            result.append(_COMP_FUNCS[cmd](repeat if repeat else 1))
             repeat = 0
         elif cmd == ':':  # In insertion mode
             esc = comp_seq.find('\x1b', index)
@@ -279,8 +278,11 @@ def _test_cursor():
             'S': v_composing(f'{dash}{p10}{dash}{p00001}{dash}{next_pos}'),
             'U': v_composing(f'{p10001 * 4}{dash}{next_pos}'),
         }
+        # Here letters.get() never returns None.
+        # pytype: disable=wrong-arg-types
         hello = ''.join(map(letters.get, 'HELLO'))
         cursor = ''.join(map(letters.get, 'CURSOR'))
+        # pytype: enable=wrong-arg-types
         putmsg(4, 20, hello.format('\U0001f7e4'))
         putmsg(10, 14, hello.format('\U0001f7e0'))
         putmsg(16, 8, cursor.format('\U0001f7e1'))
