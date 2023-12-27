@@ -1,4 +1,10 @@
-0.4.6 Current release
+0.4.8 Current release
+  * Optimize the implement of termouse module.
+  * Modified the import pattern in __init__.py.
+  * Change some descriptions of comments.
+0.4.7
+  + Add doc comments for module termouse.py
+0.4.6
   * Fix appentry can't set parameters.
   * Adjust the order of (row, col) in decode_mouse_event() return value.
 0.4.5

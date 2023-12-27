@@ -21,14 +21,55 @@ Repo - https://github.com/brookssu/ltermio.git
 
 import functools
 
-from .color256 import *
-from .cursor import *
-from .termkey import *
-from .termouse import *
+from .color256 import (
+    make_color,
+    Color,
+    set_fcolor,
+    reset_fcolor,
+    set_bcolor,
+    reset_bcolor,
+    set_color,
+    reset_color,
+)
+from .cursor import (
+    cursor_up,
+    cursor_down,
+    cursor_right,
+    cursor_left,
+    cursor_pos,
+    putmsg,
+    clear_screen,
+    scroll_up,
+    scroll_down,
+    show_cursor,
+    hide_cursor,
+    switch_screen,
+    restore_screen,
+    v_composing,
+    downward_seq,
+    vert_seq,
+    rect_border_seq,
+)
+from .termkey import (
+    getch,
+    ungetch,
+    Key,
+    ungetkey,
+    setparams,
+    getkey,
+)
+from .termouse import (
+    mouse_tracking_on,
+    mouse_tracking_off,
+    MouseEvent,
+    set_mouse_mask,
+    set_click_interval,
+    decode_mouse_event,
+)
 from .unicon import UnicodeIcon as UIcon
 
 
-__version__ = '0.4.6'
+__version__ = '0.4.8'
 __all__ = ['cursor', 'termkey', 'color256', 'unicon', 'termouse']
 
 

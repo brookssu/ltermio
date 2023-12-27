@@ -335,9 +335,11 @@ def mouse_handler(func):
 
 
 def _get_mouse_event():
-    seq = ''
-    for _ in range(3):
-        seq += getch(0)
+    # XTerm sends { CSI M Cb Cx Cy } for mouse event report, and encodes
+    # numeric parameters in a single character as (value + 32).
+    seq = getch(0)  # Cb
+    seq += getch(0)  # Cx
+    seq += getch(0)  # Cy
     if not _mouse_handler or len(seq) < 3:
         return Key.NONE
     return _mouse_handler(*map(lambda ch: (ord(ch) - 32), seq))
