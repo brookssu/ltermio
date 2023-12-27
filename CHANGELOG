@@ -1,4 +1,7 @@
-0.4.5 Current release
+0.4.6 Current release
+  * Fix appentry can't set parameters.
+  * Adjust the order of (row, col) in decode_mouse_event() return value.
+0.4.5
   + Roughly implemented mouse supporting.
 0.4.0
   + Add supporting for mouse event report in getkey().

@@ -82,10 +82,10 @@ def set_click_interval(interval: float):
 
 
 def decode_mouse_event(event: int):
-    return (event & 0xfffe0000,
-            (event & 0x3f80) >> 7,
-            event & 0x7f,
-            (event & 0x1c000) >> 6)
+    return (event & 0xfffe0000,  # event
+            (event & 0x3f80) >> 7,  # row
+            event & 0x7f,  # col
+            (event & 0x1c000) >> 6)  # modifiers
 
 
 def _on_mouse_event(data: int, col: int, row: int) -> int:
@@ -100,7 +100,7 @@ def _on_mouse_event(data: int, col: int, row: int) -> int:
                     else
                     _RELEASED_INDEX
                 ]
-        return ((event | modifiers | (col << 7) | row)
+        return ((event | modifiers | (row << 7) | col)
                 if (_mouse_mask & event) else
                 Key.NONE)
     # button pressed
@@ -111,7 +111,7 @@ def _on_mouse_event(data: int, col: int, row: int) -> int:
     _last_button = button
     _last_time = time.perf_counter()
     event = _MOUSE_EVENTS[button][_PRESSED_INDEX]
-    return ((event | modifiers | (col << 7) | row)
+    return ((event | modifiers | (row << 7) | col)
             if (_mouse_mask & event) else
             Key.NONE)
 
@@ -124,8 +124,8 @@ def _test_termouse():
     while code != Key.CONTROL_X:
         code = getkey()
         if code > Key.MOUSE_EVENT:
-            event, col, row, modifiers = decode_mouse_event(code)
-            print(f'event:{event:08x} col:{col} row:{row} m:{modifiers:04x}')
+            event, row, col, modifiers = decode_mouse_event(code)
+            print(f'event:{e:08x} y:{row} x:{col} m:{modifiers:04x}')
     setparams()
     mouse_tracking_off()
 
