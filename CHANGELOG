@@ -1,8 +1,11 @@
-0.5.1 Current release
+0.5.2 Current release
+  * Rename parameterized decorator appentry() to appentry_args().
+  + Add a new non-parameter decorator appentry().
+0.5.1
   * Change the modifier values that defined in Key, to prevent conflicts.
   * Prefix 'r' for all docstrings of the package to assure WYSWYG.
   + Add more docstrings for mouse module.
-  + Add module docstrings to README.md.
+  + Add contents of module docstrings to README.md.
 0.4.8
   * Optimize the implement of termouse module.
   * Modified the import pattern in __init__.py.

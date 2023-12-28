@@ -69,17 +69,47 @@ from .termouse import (
 from .unicon import UnicodeIcon as UIcon
 
 
-__version__ = '0.5.1'
+__version__ = '0.5.2'
 __all__ = ['cursor', 'termkey', 'color256', 'unicon', 'termouse']
 
 
-def appentry(*, echo=False, intr=False, cursor=False, mouse=False):
+def appentry(func):
     r"""A decorator of the ltermio application entry.
 
-    Before enters entry function, the decorator switchs and clears screen,
-    sets cursor and other input attributes according to the parameters.
-    And while the entry function returns, the decorator restores screen,
-    cursor, color and other set attributes.
+    Before enters entry function, the decorator switchs and clears
+    screen, disables input echo and keyboard interrupts, and hides
+    cursor.
+    And after the entry function returns, the decorator restores
+    screen, shows cursor, resets color, and enables input echo and
+    keyboard interrupts.
+
+    Another parameterized decorator appentry_args() supports more
+    flexible customizing.
+    """
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        switch_screen()
+        clear_screen()
+        setparams(echo=False, intr=False)
+        hide_cursor()
+        try:
+            return func(*args, **kwargs)
+        finally:
+            show_cursor()
+            reset_color()
+            setparams()
+            restore_screen()
+    return wrapper
+
+
+def appentry_args(*, echo=False, intr=False, cursor=False, mouse=False):
+    r"""A parameterized decorator of the ltermio application entry.
+
+    Before enters entry function, the decorator switchs and clears
+    screen, sets cursor and other input attributes according to the
+    parameters.
+    And after the entry function returns, the decorator restores screen,
+    and reset cursor, color and other set attributes.
 
     Args:
         echo: Echoes input characters if True, False to disable.
