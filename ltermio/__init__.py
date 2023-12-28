@@ -69,8 +69,8 @@ from .termouse import (
 from .unicon import UnicodeIcon as UIcon
 
 
-__version__ = '0.5.2'
-__all__ = ['cursor', 'termkey', 'color256', 'unicon', 'termouse']
+__version__ = '0.5.3'
+__all__ = ['color256', 'cursor', 'termkey', 'termouse', 'unicon',]
 
 
 def appentry(func):

@@ -312,7 +312,6 @@ _modifiers = ( 0, 0,
 
 
 def _match_csi_sequence(seq):
-    seq = seq[1:]  # Skips the first character: '[' or 'O'.
     if seq in _csi_sequences:
         return _csi_sequences[seq]
     csi = re.match(r'(.+);(1[0-6]|[1-9])([@-~])$', seq)
@@ -389,7 +388,7 @@ def getkey(timeout: int = BLOCKING_, raw: bool = False) -> Key | int:
                 seq += key_ch
                 if 0x40 <= ord(key_ch) <= 0x7E:
                     # CSI terminal character are in range of 0x40-0x7E.
-                    fkey_code = _match_csi_sequence(seq)
+                    fkey_code = _match_csi_sequence(seq[1:])
                     if fkey_code:
                         return fkey_code
                     break
@@ -407,7 +406,10 @@ def _test_termkey():
     setparams(echo=False, intr=False)
     keycode = getkey(raw=raw)
     while keycode != Key.CONTROL_X:
-        print(f'code: {keycode:04x}, char: {chr(keycode)!r}')
+        try:
+            print(f'code: {keycode:04x} - {Key(keycode).name}')
+        except ValueError:
+            print(f'code: {keycode:04x} - char: {chr(keycode)!r}')
         keycode = getkey(raw=raw)
     setparams()
 

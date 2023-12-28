@@ -53,9 +53,9 @@ An example to get key and mouse inputs as following:
 """
 
 import time
-from enum import IntEnum
+from enum import global_enum, IntEnum
 
-from .termkey import getkey, setparams, mouse_handler, Key
+from ltermio.termkey import getkey, setparams, mouse_handler, Key
 
 
 # Constants of mouse tracking modes
@@ -65,6 +65,7 @@ _NORMAL_TRACKING = 1000
 #_ANY_MOTION_TRACKING = 1003
 
 
+@global_enum
 class MouseEvent(IntEnum):
     r"""Enum constants of the mouse events.
     """
@@ -83,6 +84,24 @@ class MouseEvent(IntEnum):
     B5_PRESSED = 0x2000_0000
     B5_RELEASED = 0x4000_0000
     B5_CLICKED = 0x8000_0000
+
+    # Aliases for B1_XXX
+    B_LEFT_PRESSED = 0x0002_0000
+    B_LEFT_RELEASED = 0x0004_0000
+    B_LEFT_CLICKED = 0x0008_0000
+
+    # Aliases for B2_XXX
+    B_MIDDLE_PRESSED = 0x0010_0000
+    B_MIDDLE_RELEASED = 0x0020_0000
+    B_MIDDLE_CLICKED = 0x0040_0000
+
+    # Aliases for B3_XXX
+    B_RIGHT_PRESSED = 0x0080_0000
+    B_RIGHT_RELEASED = 0x0100_0000
+    B_RIGHT_CLICKED = 0x0200_0000
+
+    B_FOREWARD = 0x0400_0000  # Alias for B4_PRESSED
+    B_BACKWARD = 0x2000_0000  # Alias for B5_PRESSED
 
 
 _MOUSE_EVENTS = (

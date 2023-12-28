@@ -1,4 +1,8 @@
-0.5.2 Current release
+0.5.3 Current release
+  * Make MouseEvent as a global enum.
+  + Add aliases for buttons, B1 -> B_LEFT, B2 -> B_MIDDLE, B3->RIGHT.
+  * Modify some wrong descriptions in docstrings.
+0.5.2
   * Rename parameterized decorator appentry() to appentry_args().
   + Add a new non-parameter decorator appentry().
 0.5.1
