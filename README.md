@@ -5,10 +5,18 @@ All functions are based on **XTerm** specification, **CSI** sequences and **term
 
 **Applicability**: They are only for **POSIX** terminal applications.
 
-## Installation
+References:  
+<https://en.wikipedia.org/wiki/ANSI_escape_code>  
+<https://www.xfree86.org/current/ctlseqs.html>
+
+## Installation & Usage
 Uses pip to install the package:
 
 `pip3 install ltermio`
+
+More details on module usage:
+
+`pydoc ltermio.module-name`
 
 ## History & Why
 As we all know, character terminal are outdated facilities, why did I still write such a package?
@@ -45,8 +53,6 @@ A simple sample as following:
     ltermio.reset_color()
 ```
 
-Reference: <https://en.wikipedia.org/wiki/ANSI_escape_code>
-
 ## cursor module
 Wrapper functions of the **CSI(Control Sequence Introducer)** sequences about cursor and screen.
 
@@ -68,9 +74,28 @@ A several of additional functions are provided for text composing:
     rect_border_seq(width: int, height: int, sym: str) -> str
 ```
 
-References:  
-<https://en.wikipedia.org/wiki/ANSI_escape_code>  
-<https://www.xfree86.org/current/ctlseqs.html>
+Following sample code of *v_composing()* displays three big colorful greetings:
+
+```python
+    from ltermio import putmsg, v_composing
+
+    _P1 = ':{0}\x1b3hj'
+    _P15 = ':{0}\x1b6l:{0}\x1b11hj'
+    _DASH = '5:{0}\x1b11hj'
+    _NEXT_POS = '5k17l'
+
+    LETTERS = {
+        'E': v_composing(f'{(_DASH + _P1) * 2}{_DASH}{_NEXT_POS}'),
+        'H': v_composing(f'{_P15 * 2}{_DASH}{_P15 * 2}{_NEXT_POS}'),
+        'L': v_composing(f'{_P1 * 4}{_DASH}{_NEXT_POS}'),
+        'O': v_composing(f'{_DASH}{_P15 * 3}{_DASH}{_NEXT_POS}'),
+    }
+
+    greeting = ''.join(map(LETTERS.get, 'HELLO'))
+    putmsg(3, 20, greeting.format('\u2b50'))
+    putmsg(9, 14, greeting.format('\u2b55'))
+    putmsg(15, 8, greeting.format('\U0001f7e2'))
+```
 
 ## termkey module
 Functions to read input in non-canonical mode.
