@@ -23,7 +23,7 @@ mouse tracking and uses normal tracking mode, see also:
     https://www.xfree86.org/current/ctlseqs.html#Mouse%20Tracking
 
 Calls ltermio.mouse_tracking_on() to turn on the mouse tracking, or sets
-the parameter `mouse=True` on the decorator ltermio.appentry().
+the parameter `mouse=True` on the decorator ltermio.appentry_args().
 
 The mouse events are reported by ltermio.getkey(), with value encoded in
 a 32-bits integer and larger than Key.MOUSE_EVENT. It is simple to make

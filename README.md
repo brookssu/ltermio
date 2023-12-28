@@ -135,7 +135,7 @@ The implementation of the module follows the **XTerm** specification of the mous
 
 <https://www.xfree86.org/current/ctlseqs.html#Mouse%20Tracking>
     
-Calls *ltermio.mouse_tracking_on()* to turn on the mouse tracking, or sets the parameter `mouse=True` on the decorator *ltermio.appentry()*.
+Calls *ltermio.mouse_tracking_on()* to turn on the mouse tracking, or sets the parameter `mouse=True` on the decorator *ltermio.appentry_args()*.
 
 The mouse events are reported by *ltermio.getkey()*, with value encoded in a 32-bits integer and larger than *Key.MOUSE_EVENT*. It is simple to make difference from normal key codes by `code > Key.MOUSE_EVENT`.  
 Decodes the event codes by calling *ltermio.decode_mouse_event()* which returns a tuple with explicit items.
