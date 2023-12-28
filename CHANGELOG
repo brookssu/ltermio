@@ -1,4 +1,4 @@
-0.4.10 Current release
+0.5.1 Current release
   * Change the modifier values that defined in Key, to prevent conflicts.
   * Prefix 'r' for all docstrings of the package to assure WYSWYG.
   + Add more docstrings for mouse module.

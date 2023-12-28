@@ -20,10 +20,10 @@ r"""Sets 256-color display attributes of character terminal.
 There are three pairs of functions to set or restore colors according
 to their literal name:
 
-    set_fcolor(color)
+    set_fcolor()
     reset_fcolor()
 
-    set_bcolor(color)
+    set_bcolor()
     reset_bcolor()
 
     set_color()
@@ -185,7 +185,7 @@ def _test_color256():
 
     def text_color():
         for i in range(6):
-            for char in 'Hello, make_color!':
+            for char in 'Hello, color256!':
                 set_fcolor(ord(char) % 32 + 20 + i * 36)
                 print(char, end='')
             print('')

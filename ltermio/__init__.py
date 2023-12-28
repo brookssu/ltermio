@@ -69,7 +69,7 @@ from .termouse import (
 from .unicon import UnicodeIcon as UIcon
 
 
-__version__ = '0.4.10'
+__version__ = '0.5.1'
 __all__ = ['cursor', 'termkey', 'color256', 'unicon', 'termouse']
 
 
