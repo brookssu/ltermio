@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""To provide functions for reading keyboard in non-canonical mode.
+r"""Functions to read input in non-canonical mode.
 
 There are 5 curses like functions:
 
@@ -58,7 +58,7 @@ _ch_buffer = []
 BLOCKING_ = -1
 
 def getch(timeout: int = BLOCKING_) -> str:
-    """Gets a character from stdin with non-canonical mode.
+    r"""Gets a character from stdin with non-canonical mode.
 
     Instead of waiting for a CR in canonical mode, function returns
     immediately once read a key.
@@ -103,21 +103,21 @@ def getch(timeout: int = BLOCKING_) -> str:
 
 
 def ungetch(key_chs: str):
-    """Puts one or more key characters into the key buffer in order that
+    r"""Puts one or more key characters into the key buffer in order that
     following getch() or getkey() can read it(them).
     """
     _ch_buffer.extend(key_chs)
 
 
 def ungetkey(key_code: int):
-    """Puts a key code into the key buffer in order that following getch()
+    r"""Puts a key code into the key buffer in order that following getch()
     or getkey() can read it.
     """
     _ch_buffer.append(chr(key_code))
 
 
 def setparams(*, echo: bool = True, intr: bool = True):
-    """Sets frequently-used attributes of the input(stdin).
+    r"""Sets frequently-used attributes of the input(stdin).
 
     Args:
         echo: Echoes input characters if True, otherwise does not echo
@@ -138,13 +138,18 @@ def setparams(*, echo: bool = True, intr: bool = True):
 
 
 class Key(IntEnum):
-    """Defines function key codes that returns by getkey().
+    r"""Defines function key codes that returns by getkey().
 
-    The key codes here are 16 bit integers: The single-byte keys are
-    simply transformed by ord() function, and the multi-bytes CSI
+    The normal key codes here are 16 bit integers: The single-byte keys
+    are simply transformed by ord() function, and the multi-bytes CSI
     sequence keys are pesudo codes that begin from 0x101. Function key
     modifiers defined as bitmasks that could be combined with other key
     codes, like: CONTROL + SHIFT + F5
+
+    To support mouse tracking, an indicator code MOUSE_EVENT additionally
+    defined in the class. All mouse event codes that returns by getkey()
+    are larger than the indicator while all normal key codes smaller
+    than it.
 
     The term 'CSI sequences key' here refers to key sequences lead with
     '\\033['(CSI) or '\\033O'(SS3) in XTerm specification.
@@ -220,13 +225,14 @@ class Key(IntEnum):
     F0          = 0x011F
 
     # Pseudo codes for function key modifiers.
-    SHIFT       = 0x0100
-    ALT         = 0x0200
-    CONTROL     = 0x0400
-    META        = 0x0800
-    OPTION      = 0x0800
+    SHIFT       = 0x1000
+    ALT         = 0x2000
+    CONTROL     = 0x4000
+    META        = 0x8000
+    OPTION      = 0x8000
+    MODIFIERS   = 0xf000
 
-    # indicator bit of mouse events.
+    # indicator code of mouse events.
     MOUSE_EVENT = 0x0002_0000
 
 
@@ -324,7 +330,7 @@ def _match_csi_sequence(seq):
 _mouse_handler = None
 
 def mouse_handler(func):
-    """Sets a function to handle mouse report.
+    r"""Sets a function to handle mouse report.
 
     The handle function prototype:
         func(event: int, col: int, row: int) -> int
@@ -346,22 +352,27 @@ def _get_mouse_event():
 
 
 def getkey(timeout: int = BLOCKING_, raw: bool = False) -> Key | int:
-    """Gets key(s) from getch() and tranforms it(them) from string to code.
+    r"""Gets key(s) from getch() and tranforms it(them) from string to code.
 
     Function keys in form of CSI sequences will be tranformed to pseudo
     key codes that defined in class Key when 'raw' = False. All other
     unrecognized ESC sequence keys be treated as an ESC and leftover
     individual keys.
+    The getkey() also returns mouse event codes after mouse tracking mode
+    be turned on. The event codes always larger than Key.MOUSE_EVENT while
+    normal key codes smaller than it.
 
     Args:
         timeout: An argument passed to getch().
         raw: If True, getkey() will not try to tranform CSI sequence in
             keycode, but just return their code of ord() byte by byte.
-            This is usually used for key testing purpose.
+            This is usually used for key or mouse testing purpose.
 
     Returns:
         Character's keycode from ord(), or function keycode that defined
-        in class Key, or Key.NONE if timeout.
+        in class Key, or mouse event code that larger than Key.MOUSE_EVENT,
+        all these codes may combines with modifier key codes.
+        Returns Key.NONE if timeout or failure.
     """
     key_ch = getch(timeout)
     if not key_ch:
@@ -372,7 +383,7 @@ def getkey(timeout: int = BLOCKING_, raw: bool = False) -> Key | int:
         if seq in '[O':
             # In CSI sequence for leading by '\033[' or '\033O'.
             key_ch = getch(0)
-            if key_ch == 'M':  # it's a mouse event report
+            if key_ch == 'M':  # mouse event report
                 return _get_mouse_event()
             while key_ch:
                 seq += key_ch
@@ -389,19 +400,15 @@ def getkey(timeout: int = BLOCKING_, raw: bool = False) -> Key | int:
 
 
 def _test_termkey():
-    """Continuously gets keys and prints their codes and characters to
-    stdout until read a CONTROL-X.
-
-    It is just for key sequences testing purpose. Sets command argument '-r'
-    will make it only display raw key sequences.
-    """
+    # Continuously reads input and prints codes for testing purpose.
+    #
     raw = (len(sys.argv) > 1 and sys.argv[1] == '-r')
     print('Press any key to get code, CONTROL-X to exit.')
     setparams(echo=False, intr=False)
-    key = getkey()
-    while key != Key.CONTROL_X:
-        print(f'code: {key:04x}, char: {chr(key)!r}')
-        key = getkey(BLOCKING_, raw)
+    keycode = getkey(raw=raw)
+    while keycode != Key.CONTROL_X:
+        print(f'code: {keycode:04x}, char: {chr(keycode)!r}')
+        keycode = getkey(raw=raw)
     setparams()
 
 

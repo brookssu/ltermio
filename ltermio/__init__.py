@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""A lightweight POSIX character terminal I/O library.
+r"""A lightweight POSIX character terminal I/O library.
 
 Repo - https://github.com/brookssu/ltermio.git
 """
@@ -69,12 +69,12 @@ from .termouse import (
 from .unicon import UnicodeIcon as UIcon
 
 
-__version__ = '0.4.8'
+__version__ = '0.4.10'
 __all__ = ['cursor', 'termkey', 'color256', 'unicon', 'termouse']
 
 
 def appentry(*, echo=False, intr=False, cursor=False, mouse=False):
-    """A decorator of the ltermio application entry.
+    r"""A decorator of the ltermio application entry.
 
     Before enters entry function, the decorator switchs and clears screen,
     sets cursor and other input attributes according to the parameters.

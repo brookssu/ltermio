@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""Wrapper functions of CSI(Control Sequence Introducer) sequences about
+r"""Wrapper functions of the CSI(Control Sequence Introducer) sequences about
 cursor and screen.
 
 The sequences of following functions based on are not part of the ANSI
@@ -44,114 +44,114 @@ _CSI_LEAD = '\033['
 
 
 def cursor_up_seq(num: int = 1):
-    """Returns a sequence string that can move the cursor up 'num' rows.
+    r"""Returns a sequence string that can move the cursor up 'num' rows.
     """
     return f'{_CSI_LEAD}{num}A'
 
 
 def cursor_up(num: int = 1):
-    """Moves the cursor up 'num' rows.
+    r"""Moves the cursor up 'num' rows.
     """
     print(cursor_up_seq(num), end='', flush=True)
 
 
 def cursor_down_seq(num: int = 1):
-    """Returns a sequence string that can move the cursor down 'num' rows.
+    r"""Returns a sequence string that can move the cursor down 'num' rows.
     """
     return f'{_CSI_LEAD}{num}B'
 
 
 def cursor_down(num: int = 1):
-    """Moves the cursor down 'num' rows.
+    r"""Moves the cursor down 'num' rows.
     """
     print(cursor_down_seq(num), end='', flush=True)
 
 
 def cursor_right_seq(num: int = 1):
-    """Returns a sequence string that can move the cursor 'num' columns
+    r"""Returns a sequence string that can move the cursor 'num' columns
     to right.
     """
     return f'{_CSI_LEAD}{num}C'
 
 
 def cursor_right(num: int = 1):
-    """Moves the cursor 'num' columns to right.
+    r"""Moves the cursor 'num' columns to right.
     """
     print(cursor_right_seq(num), end='', flush=True)
 
 
 def cursor_left_seq(num: int = 1):
-    """Returns a sequence string that can move the cursor 'num' columns
+    r"""Returns a sequence string that can move the cursor 'num' columns
     to left.
     """
     return f'{_CSI_LEAD}{num}D'
 
 
 def cursor_left(num: int = 1):
-    """Moves the cursor 'num' columns to left.
+    r"""Moves the cursor 'num' columns to left.
     """
     print(cursor_left_seq(num), end='', flush=True)
 
 
 def cursor_pos_seq(row: int, col: int):
-    """Returns a sequence string that can move the cursor to the coordinate
+    r"""Returns a sequence string that can move the cursor to the coordinate
     (row, col).
     """
     return f'{_CSI_LEAD}{row};{col}H'
 
 
 def cursor_pos(row: int, col: int):
-    """Moves the cursor to the coordinate (row, col).
+    r"""Moves the cursor to the coordinate (row, col).
     """
     print(cursor_pos_seq(row, col), end='', flush=True)
 
 
 def putmsg(row: int, col: int, message: str, *args, **kwargs):
-    """Moves the cursor to the coordinate (row, col), and prints message.
+    r"""Moves the cursor to the coordinate (row, col), and prints message.
     """
     print(f'{cursor_pos_seq(row, col)}{message}',
           *args, **kwargs, end='', flush=True)
 
 
 def clear_screen():
-    """Clears current screen buffer.
+    r"""Clears current screen buffer.
     """
     print(f'{_CSI_LEAD}2J', end='', flush=True)
 
 
 def scroll_up(num: int = 1):
-    """Scroll whole page up by 'num' rows. New rows are added at bottom.
+    r"""Scroll whole page up by 'num' rows. New rows are added at bottom.
     """
     print(f'{_CSI_LEAD}{num}S', end='', flush=True)
 
 
 def scroll_down(num: int = 1):
-    """Scroll whole page down by 'num' rows. New rows are added at top.
+    r"""Scroll whole page down by 'num' rows. New rows are added at top.
     """
     print(f'{_CSI_LEAD}{num}T', end='', flush=True)
 
 
 def show_cursor():
-    """Shows the cursor on screen.
+    r"""Shows the cursor on screen.
     """
     print(f'{_CSI_LEAD}?25h', end='', flush=True)
 
 
 def hide_cursor():
-    """Hides the cursor from screen.
+    r"""Hides the cursor from screen.
     """
     print(f'{_CSI_LEAD}?25l', end='', flush=True)
 
 
 def switch_screen():
-    """Uses alternate screen buffer to display message, it makes the content
+    r"""Uses alternate screen buffer to display message, it makes the content
     in the normal screen buffer remaining unchange.
     """
     print(f'{_CSI_LEAD}?47h', end='', flush=True)
 
 
 def restore_screen():
-    """Switches back to the normal screen buffer.
+    r"""Switches back to the normal screen buffer.
     """
     print(f'{_CSI_LEAD}?47l', end='', flush=True)
 
@@ -242,7 +242,7 @@ def downward_seq(text: str, back_cols: int) -> str:
 
 
 def vert_seq(text:str) -> str:
-    """Generates a text sequence that makes subsequent text be output in
+    r"""Generates a text sequence that makes subsequent text be output in
     vertical downward direction.
 
     It is just a simple wapper of the downward_seq().
@@ -251,7 +251,7 @@ def vert_seq(text:str) -> str:
 
 
 def rect_border_seq(width: int, height: int, sym: str) -> str:
-    """Generates a text sequence that draws a rectangle border.
+    r"""Generates a text sequence that draws a rectangle border.
     """
     sym_w = wcswidth(sym)
     hori_border = f':{sym * width}\x1b{sym_w * width}hj'

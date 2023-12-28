@@ -1,4 +1,9 @@
-0.4.8 Current release
+0.4.10 Current release
+  * Change the modifier values that defined in Key, to prevent conflicts.
+  * Prefix 'r' for all docstrings of the package to assure WYSWYG.
+  + Add more docstrings for mouse module.
+  + Add module docstrings to README.md.
+0.4.8
   * Optimize the implement of termouse module.
   * Modified the import pattern in __init__.py.
   * Change some descriptions of comments.

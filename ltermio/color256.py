@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""Sets 256-color display attributes of character terminal.
+r"""Sets 256-color display attributes of character terminal.
 
 There are three pairs of functions to set or restore colors according
 to their literal name:
@@ -26,7 +26,7 @@ to their literal name:
     set_bcolor(color)
     reset_bcolor()
 
-    set_color(text_color, background_color)
+    set_color()
     reset_color()
 
 Enum class Color defined constants of some basic colors and grayscales,
@@ -52,7 +52,7 @@ import enum
 _CSI_LEAD = '\033['
 
 def make_color(red: int, green: int, blue: int) -> int:
-    """Returns a 256-color number according to the given RGB parameters.
+    r"""Returns a 256-color number according to the given RGB parameters.
 
     Args:
         All parameters' valid values must be in range of 0~5.
@@ -66,7 +66,7 @@ def make_color(red: int, green: int, blue: int) -> int:
 
 
 class Color(enum.IntEnum):
-    """Enumerates some common constants of colors.
+    r"""Enumerates some common constants of colors.
     """
     BLACK = 0
     RED = 1
@@ -141,39 +141,38 @@ class Color(enum.IntEnum):
 
 
 def set_fcolor(color: int):
-    """Sets text(foreground) color of terminal.
+    r"""Sets foreground color.
     """
     print(f'{_CSI_LEAD}38;5;{color}m', end='')
 
 
 def reset_fcolor():
-    """Restores text color to the default value of terminal.
+    r"""Restores the foreground color to the default value.
     """
     print(f'{_CSI_LEAD}39m', end='')
 
 
 def set_bcolor(color: int):
-    """Sets background color of terminal.
+    r"""Sets background color.
     """
     print(f'{_CSI_LEAD}48;5;{color}m', end='')
 
 
 def reset_bcolor():
-    """Restores background color to the default value of terminal.
+    r"""Restores the background color to the default value.
     """
     print(f'{_CSI_LEAD}49m', end='')
 
 
-def set_color(text_color: int, background_color: int):
-    """Sets text(foreground) color to 'text_color' and background color
-    to 'background_color'.
+def set_color(fcolor: int, bcolor: int):
+    r"""Sets foreground to 'fcolor' and background to 'bcolor'.
     """
-    print(f'{_CSI_LEAD}38;5;{text_color}m{_CSI_LEAD}48;5;{background_color}m',
+    print(f'{_CSI_LEAD}38;5;{fcolor}m{_CSI_LEAD}48;5;{bcolor}m',
           end='')
 
 
 def reset_color():
-    """Restores text and background color to the default value of terminal.
+    r"""Restores foreground and background color to the default value.
     """
     print(f'{_CSI_LEAD}39;49m', end='')
 

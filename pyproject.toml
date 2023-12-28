@@ -12,11 +12,12 @@ authors = [
     {name = 'Brooks Su', email = 'yipeng00@gmail.com'},
 ]
 keywords = [
-    'ltermio', 'termios', 'ansi', 'xterm', 'terminal',
+    'ltermio', 'termios', 'xterm', 'terminal',
     'cursor', 'curses', 'composing',
     'termkey', 'keyboard', 'getch',
+    'termouse', 'mouse',
     'color256', 'color', 'colour',
-    'csi', 'esc sequence', 'character terminal',
+    'csi', 'posix', 'ansi', 'xfree86',
 ]
 classifiers = [
     'License :: OSI Approved :: Apache Software License',
@@ -25,6 +26,10 @@ classifiers = [
     'Operating System :: POSIX',
     'Operating System :: MacOS :: MacOS X',
     'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
     'Environment :: Console',
     'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
@@ -36,7 +41,8 @@ dynamic = ['version',]
 Homepage = 'https://github.com/brookssu/ltermio'
 
 [project.scripts]
-cursor-demo = 'ltermio.cursor:_test_cursor'
+key-test = 'ltermio.termkey:_test_termkey'
+mouse-test = 'ltermio.termouse:_test_termouse'
 
 [tool.hatch.version]
 path = 'ltermio/__init__.py'

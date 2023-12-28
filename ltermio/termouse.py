@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""Detects and reports mouse events.
+r"""Detects and reports mouse events.
 
 The implementation of the module follows the XTerm specification of the
 mouse tracking and uses normal tracking mode, see also:
@@ -27,9 +27,29 @@ the parameter `mouse=True` on the decorator ltermio.appentry().
 
 The mouse events are reported by ltermio.getkey(), with value encoded in
 a 32-bits integer and larger than Key.MOUSE_EVENT. It is simple to make
-difference from normal key code by `code > Key.MOUSE_EVENT`.
-Decodes the event code by calling ltermio.decode_mouse_event() which
+difference from normal key codes by `code > Key.MOUSE_EVENT`.
+Decodes the event codes by calling ltermio.decode_mouse_event() which
 returns a tuple with explicit items.
+
+An example to get key and mouse inputs as following:
+
+    from ltermio import Key, MouseEvent
+
+    ltermio.mouse_tracking_on()
+    ltermio.setparams(echo=False)
+
+    code = ltermio.getkey()
+    while code != Key.CONTROL_X:
+        if code > Key.MOUSE_EVENT:
+            event, row, col, modifiers = ltermio.decode_mouse_event(code)
+            if event == MouseEvent.B1_CLICKED:
+                ... # do something with mouse event
+        else:
+            ... # do something with key input
+        code = ltermio.getkey()
+
+    ltermio.setparams(echo=True)
+    ltermio.mouse_tracking_off()
 """
 
 import time
@@ -46,7 +66,7 @@ _NORMAL_TRACKING = 1000
 
 
 class MouseEvent(IntEnum):
-    """Enum constants of the mouse events.
+    r"""Enum constants of the mouse events.
     """
     B1_PRESSED = 0x0002_0000
     B1_RELEASED = 0x0004_0000
@@ -96,21 +116,21 @@ def _tracking_off(mode: int):
 
 
 def mouse_tracking_on():
-    """Truns on mouse tracking.
+    r"""Truns on mouse tracking.
     """
     mouse_handler(_on_mouse_event)
     _tracking_on(_NORMAL_TRACKING)
 
 
 def mouse_tracking_off():
-    """Truns off mouse tracking.
+    r"""Truns off mouse tracking.
     """
     _tracking_off(_NORMAL_TRACKING)
     mouse_handler(None)
 
 
 def set_mouse_mask(mask: int):
-    """Sets the mouse events to be reported.
+    r"""Sets the mouse events to be reported.
 
     If turns mouse tracking on and does not call this function, all
     mouse events are reported by default.
@@ -124,7 +144,7 @@ def set_mouse_mask(mask: int):
 
 
 def set_click_interval(interval: float):
-    """Sets the maximum time limit between press and release in order
+    r"""Sets the maximum time limit between press and release in order
     that code can recognize them as one click.
 
     When a CLICKED event occurs, it also means that a RELEASED event
@@ -140,7 +160,7 @@ def set_click_interval(interval: float):
 
 
 def decode_mouse_event(code: int) -> tuple[int, int, int, int]:
-    """Decodes the mouse event code into a tuple.
+    r"""Decodes the mouse event code into a tuple.
 
     Args:
         code: The mouse event code that returns by ltermio.getkey(), which
@@ -148,7 +168,7 @@ def decode_mouse_event(code: int) -> tuple[int, int, int, int]:
 
     returns:
         A tuple with 4 items: (event, row, col, modifiers):
-        event: One of the mouse events which defined in the module.
+        event: One of the mouse events which defined in the MouseEvent.
         row, col: Screen coordinate of the mouse when the event occurs.
         modifiers: Modifier keys(Shift, Alt or Meta, Control) that be
             pressed when the event occurs, their values are identical
@@ -157,11 +177,18 @@ def decode_mouse_event(code: int) -> tuple[int, int, int, int]:
     return (code & 0xfffe0000,  # event
             (code & 0x3f80) >> 7,  # row
             code & 0x7f,  # col
-            (code & 0x1c000) >> 6)  # modifiers
+            (code & 0x1c000) >> 2)  # modifiers
 
 
 def _on_mouse_event(data: int, col: int, row: int) -> int:
     global _pressed_button, _pressed_time
+
+    # On button press or release, xterm sends CSI M Cb Cx Cy. The low two
+    # bits of Cb(data) encode button information:
+    #       0=B1 pressed, 1=B2 pressed, 2=B3 pressed, 3=release.
+    # The next three bits encode the modifiers which were down when the
+    # button was pressed and are added together:
+    #       4=Shift, 8=Alt(Meta), 16=Control.
 
     button = data & 0x03
     # Encodes modifiers, row and col into lower 17 bits of the event code.
@@ -176,7 +203,11 @@ def _on_mouse_event(data: int, col: int, row: int) -> int:
         return (event | lower) if (_mouse_mask & event) else Key.NONE
 
     # Button pressed
-    if data >= 64:  # Wheel mouse returns button 4 or 5
+    if data >= 64:
+        # Wheel mice may return buttons 4 and 5. Those buttons are represented
+        # by the same event codes as buttons 1 and 2 respectively, except that
+        # 64 is added to the event code. Release events for the wheel buttons
+        # are not reported.
         if button > 1:
             return Key.NONE
         button += 3
@@ -186,16 +217,33 @@ def _on_mouse_event(data: int, col: int, row: int) -> int:
     return (event | lower) if (_mouse_mask & event) else Key.NONE
 
 
+def _mdf_names(code):
+    modifiers = []
+    if code & Key.SHIFT:
+        modifiers.append(Key.SHIFT.name)
+    if code & Key.ALT:
+        modifiers.append(Key.ALT.name)
+    if code & Key.CONTROL:
+        modifiers.append(Key.CONTROL.name)
+    if code & Key.META:
+        modifiers.append(Key.META.name)
+    return ' '.join(modifiers)
+
+
 def _test_termouse():
     mouse_tracking_on()
-#    set_mouse_mask(MouseEvent.B3_CLICKED + MouseEvent.B1_CLICKED)
     setparams(echo=False, intr=False)
+    print('Press any key or click mouse to get code, CONTROL-X to exit.')
     code = getkey()
     while code != Key.CONTROL_X:
-        code = getkey()
-        if code > Key.MOUSE_EVENT:
+        if code < Key.MOUSE_EVENT:
+            print(f'Key code({code:04X}) - char({chr(code)!r})'
+                  f' {_mdf_names(code)}')
+        else:
             event, row, col, modifiers = decode_mouse_event(code)
-            print(f'e:{event:08x} y:{row} x:{col} m:{modifiers:04x}')
+            print(f'Mouse code({code:08X}) - {MouseEvent(event).name}'
+                  f'({row}, {col}) {_mdf_names(modifiers)}')
+        code = getkey()
     setparams()
     mouse_tracking_off()
 
