@@ -30,6 +30,8 @@ from .color256 import (
     reset_bcolor,
     set_color,
     reset_color,
+    TextAttr,
+    set_textattr,
 )
 from .cursor import (
     cursor_up,
@@ -49,6 +51,8 @@ from .cursor import (
     downward_seq,
     vert_seq,
     rect_border_seq,
+    CursorShape,
+    set_cursor_shape,
 )
 from .termkey import (
     getch,
@@ -69,7 +73,7 @@ from .termouse import (
 from .unicon import UnicodeIcon as UIcon
 
 
-__version__ = '0.5.3'
+__version__ = '0.6.1'
 __all__ = ['color256', 'cursor', 'termkey', 'termouse', 'unicon',]
 
 

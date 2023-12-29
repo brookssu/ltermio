@@ -18,14 +18,6 @@
 r"""Wrapper functions of the CSI(Control Sequence Introducer) sequences about
 cursor and screen.
 
-The sequences of following functions based on are not part of the ANSI
-specification, but be supported by most of terminals.
-
-    show_cursor()
-    hide_cursor()
-    switch_screen()
-    restore_screen()
-
 A several of additional functions are provided for text composing:
 
     v_composing()
@@ -37,6 +29,7 @@ Reference: https://en.wikipedia.org/wiki/ANSI_escape_code
            https://www.xfree86.org/current/ctlseqs.html
 """
 
+import enum
 from wcwidth import wcswidth
 
 
@@ -106,11 +99,22 @@ def cursor_pos(row: int, col: int):
     print(cursor_pos_seq(row, col), end='', flush=True)
 
 
-def putmsg(row: int, col: int, message: str, *args, **kwargs):
+def putmsg(
+    row: int,
+    col: int,
+    message: str,
+    *args,
+    end: str = '',
+    flush: bool = True,
+    **kwargs,
+):
     r"""Moves the cursor to the coordinate (row, col), and prints message.
+
+    Function sets flush to True and does not append '\n' at the end of
+    the message by default.
     """
     print(f'{cursor_pos_seq(row, col)}{message}',
-          *args, **kwargs, end='', flush=True)
+          *args, **kwargs, end=end, flush=flush)
 
 
 def clear_screen():
@@ -141,6 +145,22 @@ def hide_cursor():
     r"""Hides the cursor from screen.
     """
     print(f'{_CSI_LEAD}?25l', end='', flush=True)
+
+
+class CursorShape(enum.IntEnum):
+    """Enumerates constants of the cursor shapes.
+    """
+    DEFAULT = 0
+    BLOCK = 2
+    UNDERLINE = 4
+    BAR = 6
+
+
+def set_cursor_shape(shape: CursorShape, blinking: bool = False):
+    """Changes cursor shape to the 'shape'. Sets 'blinking' to True makes
+    cursor to blink.
+    """
+    print(f'{_CSI_LEAD}{shape - blinking} q', end='', flush=True)
 
 
 def switch_screen():
@@ -184,13 +204,14 @@ def v_composing(comp_seq: str) -> str:
             'E': v_composing(f'{(_DASH + _P1) * 2}{_DASH}{_NEXT_POS}'),
             'H': v_composing(f'{_P15 * 2}{_DASH}{_P15 * 2}{_NEXT_POS}'),
             'L': v_composing(f'{_P1 * 4}{_DASH}{_NEXT_POS}'),
-            'O': v_composing(f'{_DASH}{_P15 * 3}{_DASH}{_NEXT_POS}'),
+            'O': v_composing(f'{_DASH}{_P15 * 3}{_DASH}'),
         }
 
         greeting = ''.join(map(LETTERS.get, 'HELLO'))
         putmsg(3, 20, greeting.format('\u2b50'))
         putmsg(9, 14, greeting.format('\u2b55'))
         putmsg(15, 8, greeting.format('\U0001f7e2'))
+        print('\n')
 
     Returns:
         A text composing sequnce that can be output to the screen in the

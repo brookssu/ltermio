@@ -1,4 +1,12 @@
-0.5.3 Current release
+0.6.1 Current release
+  * Re-encode mouse events into high 13 bits of the 32 bits integer.
+  + Add supporting of mouse buttons 6 and 7.
+  * Modify the descriptions about MouseEvent in comments and docstrings.
+  + Add a new enum TextAttr to define attributes like BOLD, ITALIC, etc.
+  + Add new funcs set_textattr() textattr_seq() to set text attributes.
+  + Add a new enum CursorShape to define cursor shapes.
+  + Add new func set_cursor_shape() to change cursor shape.
+0.5.3
   * Make MouseEvent as a global enum.
   + Add aliases for buttons, B1 -> B_LEFT, B2 -> B_MIDDLE, B3->RIGHT.
   * Modify some wrong descriptions in docstrings.

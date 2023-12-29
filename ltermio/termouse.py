@@ -21,6 +21,7 @@ The implementation of the module follows the XTerm specification of the
 mouse tracking and uses normal tracking mode, see also:
 
     https://www.xfree86.org/current/ctlseqs.html#Mouse%20Tracking
+    https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Mouse-Tracking
 
 Calls ltermio.mouse_tracking_on() to turn on the mouse tracking, or sets
 the parameter `mouse=True` on the decorator ltermio.appentry_args().
@@ -53,7 +54,7 @@ An example to get key and mouse inputs as following:
 """
 
 import time
-from enum import global_enum, IntEnum
+from enum import IntEnum
 
 from ltermio.termkey import getkey, setparams, mouse_handler, Key
 
@@ -65,51 +66,55 @@ _NORMAL_TRACKING = 1000
 #_ANY_MOTION_TRACKING = 1003
 
 
-@global_enum
 class MouseEvent(IntEnum):
     r"""Enum constants of the mouse events.
+
+    There are 3 types of events for buttons 1, 2 and 3: PRESSED, RELEASED
+    and CLICKED. Buttons 4~7 PRESSEDs are defined for wheel mice, but they
+    have only PRESSED event for wheel buttons have no releases.
     """
-    B1_PRESSED = 0x0002_0000
-    B1_RELEASED = 0x0004_0000
-    B1_CLICKED = 0x0008_0000
-    B2_PRESSED = 0x0010_0000
-    B2_RELEASED = 0x0020_0000
-    B2_CLICKED = 0x0040_0000
-    B3_PRESSED = 0x0080_0000
-    B3_RELEASED = 0x0100_0000
-    B3_CLICKED = 0x0200_0000
-    B4_PRESSED = 0x0400_0000
-    B4_RELEASED = 0x0800_0000
-    B4_CLICKED = 0x1000_0000
-    B5_PRESSED = 0x2000_0000
-    B5_RELEASED = 0x4000_0000
-    B5_CLICKED = 0x8000_0000
+    B1_PRESSED  = 0x0008_0000
+    B1_RELEASED = 0x0010_0000
+    B1_CLICKED  = 0x0020_0000
+    B2_PRESSED  = 0x0040_0000
+    B2_RELEASED = 0x0080_0000
+    B2_CLICKED  = 0x0100_0000
+    B3_PRESSED  = 0x0200_0000
+    B3_RELEASED = 0x0400_0000
+    B3_CLICKED  = 0x0800_0000
+
+    B4_PRESSED  = 0x1000_0000
+    B5_PRESSED  = 0x2000_0000
+    B6_PRESSED  = 0x4000_0000
+    B7_PRESSED  = 0x8000_0000
 
     # Aliases for B1_XXX
-    B_LEFT_PRESSED = 0x0002_0000
-    B_LEFT_RELEASED = 0x0004_0000
-    B_LEFT_CLICKED = 0x0008_0000
+    B_LEFT_PRESSED = B1_PRESSED
+    B_LEFT_RELEASED = B1_RELEASED
+    B_LEFT_CLICKED = B1_CLICKED
 
     # Aliases for B2_XXX
-    B_MIDDLE_PRESSED = 0x0010_0000
-    B_MIDDLE_RELEASED = 0x0020_0000
-    B_MIDDLE_CLICKED = 0x0040_0000
+    B_MIDDLE_PRESSED = B2_PRESSED
+    B_MIDDLE_RELEASED = B2_RELEASED
+    B_MIDDLE_CLICKED = B2_CLICKED
 
     # Aliases for B3_XXX
-    B_RIGHT_PRESSED = 0x0080_0000
-    B_RIGHT_RELEASED = 0x0100_0000
-    B_RIGHT_CLICKED = 0x0200_0000
+    B_RIGHT_PRESSED = B3_PRESSED
+    B_RIGHT_RELEASED = B3_RELEASED
+    B_RIGHT_CLICKED = B3_CLICKED
 
-    B_FOREWARD = 0x0400_0000  # Alias for B4_PRESSED
-    B_BACKWARD = 0x2000_0000  # Alias for B5_PRESSED
+    B_SCROLL_BACK = B4_PRESSED  # Alias for B4_PRESSED
+    B_SCROLL_FORW = B5_PRESSED  # Alias for B5_PRESSED
 
 
 _MOUSE_EVENTS = (
     (MouseEvent.B1_PRESSED, MouseEvent.B1_RELEASED, MouseEvent.B1_CLICKED),
     (MouseEvent.B2_PRESSED, MouseEvent.B2_RELEASED, MouseEvent.B2_CLICKED),
     (MouseEvent.B3_PRESSED, MouseEvent.B3_RELEASED, MouseEvent.B3_CLICKED),
-    (MouseEvent.B4_PRESSED, MouseEvent.B4_RELEASED, MouseEvent.B4_CLICKED),
-    (MouseEvent.B5_PRESSED, MouseEvent.B5_RELEASED, MouseEvent.B5_CLICKED),
+    (MouseEvent.B4_PRESSED,),
+    (MouseEvent.B5_PRESSED,),
+    (MouseEvent.B6_PRESSED,),
+    (MouseEvent.B7_PRESSED,),
 )
 _PRESSED_INDEX = 0
 _RELEASED_INDEX = 1
@@ -118,7 +123,7 @@ _CLICKED_INDEX = 2
 
 # pylint: disable=invalid-name
 # pylint: disable=global-statement
-_mouse_mask: int = 0xfffe_0000
+_mouse_mask: int = 0xfff8_0000
 _pressed_button: int = 0
 _pressed_time: float = 0.
 _click_interval: float = 0.2  # seconds
@@ -193,10 +198,10 @@ def decode_mouse_event(code: int) -> tuple[int, int, int, int]:
             pressed when the event occurs, their values are identical
             to their values in ltermio.Key.
     """
-    return (code & 0xfffe0000,  # event
-            (code & 0x3f80) >> 7,  # row
-            code & 0x7f,  # col
-            (code & 0x1c000) >> 2)  # modifiers
+    return (code & 0xfff8_0000,  # event
+            (code & 0xff00) >> 8,  # row
+            code & 0xff,  # col
+            (code & 0x7_0000) >> 4)  # modifiers
 
 
 def _on_mouse_event(data: int, col: int, row: int) -> int:
@@ -208,30 +213,33 @@ def _on_mouse_event(data: int, col: int, row: int) -> int:
     # The next three bits encode the modifiers which were down when the
     # button was pressed and are added together:
     #       4=Shift, 8=Alt(Meta), 16=Control.
-
     button = data & 0x03
-    # Encodes modifiers, row and col into lower 17 bits of the event code.
-    lower = ((data & 0x1c) << 12) | (row << 7) | col
 
-    if button == 3:  # Button released
+    # Encodes modifiers, row and col into lower 19 bits of the event code:
+    #       0~7: col, 8~15: row, 16~18: modifiers
+    lower = ((data & 0x1c) << 14) | (row << 8) | col
+
+    # if data >= 128:
+    #     ? buttons 8~11 not supports yet, just ignores to treat them as
+    #     buttons 4~7.
+    #
+    if data >= 64:
+        # Wheel mice may return buttons 4 ~ 7. Those buttons are also
+        # represented by the low two bits of Cb, except that 64 is added
+        # to the event data.
+        button += 3
+    elif button == 3:  # Button released
         if time.perf_counter() - _pressed_time < _click_interval:
             event = _MOUSE_EVENTS[_pressed_button][_CLICKED_INDEX]
             if _mouse_mask & event:
                 return event | lower
         event = _MOUSE_EVENTS[_pressed_button][_RELEASED_INDEX]
         return (event | lower) if (_mouse_mask & event) else Key.NONE
-
-    # Button pressed
-    if data >= 64:
-        # Wheel mice may return buttons 4 and 5. Those buttons are represented
-        # by the same event codes as buttons 1 and 2 respectively, except that
-        # 64 is added to the event code. Release events for the wheel buttons
-        # are not reported.
-        if button > 1:
-            return Key.NONE
-        button += 3
-    _pressed_button = button
-    _pressed_time = time.perf_counter()
+    else:  # data < 64 and button != 3
+        # Saves PRESSED event for CLICKED event, but just buttons 1~3 for
+        # release events for the wheel buttons are not reported.
+        _pressed_button = button
+        _pressed_time = time.perf_counter()
     event = _MOUSE_EVENTS[button][_PRESSED_INDEX]
     return (event | lower) if (_mouse_mask & event) else Key.NONE
 

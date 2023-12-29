@@ -230,10 +230,10 @@ class Key(IntEnum):
     CONTROL     = 0x4000
     META        = 0x8000
     OPTION      = 0x8000
-    MODIFIERS   = 0xf000
+    MODIFIERS   = 0xf000  # mask
 
-    # indicator code of mouse events.
-    MOUSE_EVENT = 0x0002_0000
+    # Indicator code of mouse events.
+    MOUSE_EVENT = 0x0008_0000
 
 
 _csi_sequences = {
