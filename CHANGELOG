@@ -1,4 +1,7 @@
-0.6.1 Current release
+0.6.2 Current release
+  * Rename make_color() to rgb().
+  + Add a new function reset_textattr() to restore attributes of text.
+0.6.1
   * Re-encode mouse events into high 13 bits of the 32 bits integer.
   + Add supporting of mouse buttons 6 and 7.
   * Modify the descriptions about MouseEvent in comments and docstrings.

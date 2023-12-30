@@ -22,7 +22,7 @@ Repo - https://github.com/brookssu/ltermio.git
 import functools
 
 from .color256 import (
-    make_color,
+    rgb,
     Color,
     set_fcolor,
     reset_fcolor,
@@ -32,6 +32,7 @@ from .color256 import (
     reset_color,
     TextAttr,
     set_textattr,
+    reset_textattr,
 )
 from .cursor import (
     cursor_up,
@@ -73,7 +74,7 @@ from .termouse import (
 from .unicon import UnicodeIcon as UIcon
 
 
-__version__ = '0.6.1'
+__version__ = '0.6.2'
 __all__ = ['color256', 'cursor', 'termkey', 'termouse', 'unicon',]
 
 

@@ -56,7 +56,7 @@ An example to get key and mouse inputs as following:
 import time
 from enum import IntEnum
 
-from ltermio.termkey import getkey, setparams, mouse_handler, Key
+from .termkey import getkey, setparams, mouse_handler, Key
 
 
 # Constants of mouse tracking modes
