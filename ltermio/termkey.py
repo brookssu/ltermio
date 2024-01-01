@@ -341,7 +341,7 @@ def mouse_handler(func):
 
 def _get_mouse_event():
     # XTerm sends { CSI M Cb Cx Cy } for mouse event report, and encodes
-    # numeric parameters in a single character as (value + 32).
+    # numeric parameter in a single character as (value + 32).
     seq = getch(0)  # Cb
     seq += getch(0)  # Cx
     seq += getch(0)  # Cy
@@ -358,13 +358,14 @@ def getkey(timeout: int = BLOCKING_, raw: bool = False) -> Key | int:
     unrecognized ESC sequence keys be treated as an ESC and leftover
     individual keys.
     The getkey() also returns mouse event codes after mouse tracking mode
-    be turned on. The event codes always larger than Key.MOUSE_EVENT while
-    normal key codes smaller than it.
+    be turned on.
 
     Args:
-        timeout: An argument passed to getch().
-        raw: If True, getkey() will not try to tranform CSI sequence in
-            keycode, but just return their code of ord() byte by byte.
+        timeout: An argument passed to getch(). The timeout may be breaked
+            if mouse tracking mode is turned on, that means, function may
+            returns a mouse event code or Key.NONE before timeout.
+        raw: If True, getkey() does not try to tranform CSI sequence in
+            keycode, but just returns their code of ord() byte by byte.
             This is usually used for key or mouse testing purpose.
 
     Returns:

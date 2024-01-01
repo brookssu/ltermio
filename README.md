@@ -154,6 +154,7 @@ Decodes the event codes by calling *ltermio.decode_mouse_event()* which returns 
 An example to get key and mouse inputs as following:
 
 ```python
+    import ltermio
     from ltermio import Key, MouseEvent
 
     ltermio.mouse_tracking_on()

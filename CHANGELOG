@@ -1,4 +1,7 @@
-0.6.2 Current release
+0.6.3 Current release
+  + Add some unicode icons to UnicodeIcon.
+  * Modify some docstrings.
+0.6.2
   * Rename make_color() to rgb().
   + Add a new function reset_textattr() to restore attributes of text.
 0.6.1

@@ -34,6 +34,7 @@ returns a tuple with explicit items.
 
 An example to get key and mouse inputs as following:
 
+    import ltermio
     from ltermio import Key, MouseEvent
 
     ltermio.mouse_tracking_on()
@@ -174,7 +175,8 @@ def set_click_interval(interval: float):
     When a CLICKED event occurs, it also means that a RELEASED event
     has occurred at the same time.  In this case, ltermio does not
     report two events but only reports the CLICKED, or only reports
-    the RELEASED when the CLICKED event is masked.
+    the RELEASED when the CLICKED event is masked, or nothing if both
+    masked.
 
     Args:
         interval: time interval in seconds, the default value is 0.2s.
@@ -194,8 +196,8 @@ def decode_mouse_event(code: int) -> tuple[int, int, int, int]:
         A tuple with 4 items: (event, row, col, modifiers):
         event: One of the mouse events which defined in the MouseEvent.
         row, col: Screen coordinate of the mouse when the event occurs.
-        modifiers: Modifier keys(Shift, Alt or Meta, Control) that be
-            pressed when the event occurs, their values are identical
+        modifiers: Modifier keys(Shift, Alt or Meta, Control) that were
+            down when the event occurs, their values are identical
             to their values in ltermio.Key.
     """
     return (code & 0xfff8_0000,  # event
@@ -236,8 +238,7 @@ def _on_mouse_event(data: int, col: int, row: int) -> int:
         event = _MOUSE_EVENTS[_pressed_button][_RELEASED_INDEX]
         return (event | lower) if (_mouse_mask & event) else Key.NONE
     else:  # data < 64 and button != 3
-        # Saves PRESSED event for CLICKED event, but just buttons 1~3 for
-        # release events for the wheel buttons are not reported.
+        # Saves the PRESSED event for CLICKED detecting.
         _pressed_button = button
         _pressed_time = time.perf_counter()
     event = _MOUSE_EVENTS[button][_PRESSED_INDEX]
